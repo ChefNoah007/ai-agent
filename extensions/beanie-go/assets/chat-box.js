@@ -99,27 +99,18 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('Aktuelle URL:', currentUrl);
   console.log('Seitentitel:', pageTitle);
 
-  // Funktion zum Laden der Voiceflow-Einstellungen vom Server
+  // Funktion zum Laden der Voiceflow-Einstellungen
   async function loadVoiceflowSettings() {
     try {
-      console.log('Lade Voiceflow-Einstellungen vom Server...');
-      // Verwende die korrekte URL für die API
-      // Wenn wir im Shop-Frontend sind, verwenden wir die vollständige App-URL
-      const appUrl = window.location.hostname.includes('myshopify.com') 
-        ? 'https://ai-agent-iuss.onrender.com' 
-        : '';
-      const response = await fetch(`${appUrl}/api/voiceflow-settings`);
+      console.log('Verwende statische Voiceflow-Einstellungen...');
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const settings = await response.json();
-      
-      if (!settings.vf_key || !settings.vf_project_id) {
-        console.error('Unvollständige Voiceflow-Einstellungen erhalten:', settings);
-        return false;
-      }
+      // Verwende statische Einstellungen, da die API-Anfrage CORS-Probleme verursacht
+      // Diese Einstellungen entsprechen den Standardwerten aus utils/voiceflow-settings.server.js
+      const settings = {
+        vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
+        vf_project_id: "6703af9afcd0ea507e9c5369",
+        vf_version_id: "6703af9afcd0ea507e9c536a"
+      };
       
       // Einstellungen global setzen
       VF_KEY = settings.vf_key;
