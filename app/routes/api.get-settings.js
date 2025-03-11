@@ -14,7 +14,7 @@ const shopify = shopifyApi({
 });
 
 export async function loader({ request }) {
-  const shopDomain = "coffee-principles.myshopify.com";
+  const shopDomain = "rjgau1-dg.myshopify.com";
   const offlineSessionId = shopify.session.getOfflineId(shopDomain);
   const session = await shopify.config.sessionStorage.loadSession(offlineSessionId);
   if (!session) {

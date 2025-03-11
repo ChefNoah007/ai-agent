@@ -35,8 +35,8 @@ export default function SyncPage() {
     try {
       // Determine which endpoint to call based on the selected sync type
       const endpoint = syncType === 'products' 
-        ? 'https://redo-ia4o.onrender.com/api/synchronize'
-        : 'https://redo-ia4o.onrender.com/api/synchronize-urls';
+        ? 'https://ai-agent-iuss.onrender.com/api/synchronize'
+        : 'https://ai-agent-iuss.onrender.com/api/synchronize-urls';
       
       const response = await fetch(endpoint, {
         method: 'POST',

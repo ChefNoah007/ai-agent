@@ -22,7 +22,7 @@ register(({ analytics }) => {
       }
   
       // Dann deinen Tracking-Call an dein Backend
-      fetch("https://redo-ia4o.onrender.com/track", {
+      fetch("https://ai-agent-iuss.onrender.com/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

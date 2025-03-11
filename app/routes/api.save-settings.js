@@ -23,7 +23,7 @@ export async function action({ request }) {
     const { settings } = await request.json();
     const value = JSON.stringify(settings);
   
-    const shopDomain = "coffee-principles.myshopify.com";
+    const shopDomain = "rjgau1-dg.myshopify.com";
     const offlineSessionId = shopify.session.getOfflineId(shopDomain);
     const session = await shopify.config.sessionStorage.loadSession(offlineSessionId);
     if (!session) {

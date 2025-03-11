@@ -12,7 +12,7 @@ export const action = async ({ request }) => {
     const overwrite = body.overwrite === true;
 
     // Hardcoded shop domain - in a real app, this would be dynamic
-    const shopDomain = "coffee-principles.myshopify.com";
+    const shopDomain = "rjgau1-dg.myshopify.com";
     
     // Fetch the sitemap
     const sitemapUrl = `https://${shopDomain}/sitemap.xml`;

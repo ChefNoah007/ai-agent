@@ -28,7 +28,7 @@ export async function loader({ request }) {
     console.log("Calculated start date:", startDate.toISOString());
 
     // Create a cache key based on the shop domain and time range
-    const shopDomain = "coffee-principles.myshopify.com";
+    const shopDomain = "rjgau1-dg.myshopify.com";
     const cacheKey = `orders:${shopDomain}:${timeRangeParam}`;
     
     // Try to get data from cache first

@@ -22,7 +22,7 @@ export default function SyncPage() {
     setIsSynchronizing(true);
     try {
       // ⬇️ Body enthält jetzt { overwrite }
-      const response = await fetch('https://redo-ia4o.onrender.com/api/synchronize', {
+      const response = await fetch('https://ai-agent-iuss.onrender.com/api/synchronize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -21,7 +21,7 @@ export const action = async ({ request }) => {
     const body = await request.json();
     const overwrite = body.overwrite === true;
 
-    const shopDomain = "coffee-principles.myshopify.com";
+    const shopDomain = "rjgau1-dg.myshopify.com";
     const offlineSessionId = shopify.session.getOfflineId(shopDomain);
 
     const session = await shopify.config.sessionStorage.loadSession(offlineSessionId);
