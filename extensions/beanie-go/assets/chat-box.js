@@ -102,28 +102,45 @@ document.addEventListener('DOMContentLoaded', function () {
   // Funktion zum Laden der Voiceflow-Einstellungen
   async function loadVoiceflowSettings() {
     try {
-      console.log('Verwende statische Voiceflow-Einstellungen...');
-      
-      // Verwende statische Einstellungen, da die API-Anfrage CORS-Probleme verursacht
-      // Diese Einstellungen entsprechen den Standardwerten aus utils/voiceflow-settings.server.js
-      const settings = {
-        vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
-        vf_project_id: "6703af9afcd0ea507e9c5369",
-        vf_version_id: "6703af9afcd0ea507e9c536a"
-      };
-      
-      // Einstellungen global setzen
-      VF_KEY = settings.vf_key;
-      VF_PROJECT_ID = settings.vf_project_id;
-      VF_VERSION_ID = settings.vf_version_id;
-      
-      console.log('Voiceflow-Einstellungen erfolgreich geladen:', {
-        vf_key: VF_KEY ? "Present (masked)" : "Missing",
-        vf_project_id: VF_PROJECT_ID || "Missing",
-        vf_version_id: VF_VERSION_ID || "Missing"
-      });
-      
-      return true;
+      // Prüfen, ob die Einstellungen vom App Block injiziert wurden
+      if (window.VOICEFLOW_SETTINGS) {
+        console.log('Verwende Voiceflow-Einstellungen aus dem App Block...');
+        
+        // Einstellungen global setzen
+        VF_KEY = window.VOICEFLOW_SETTINGS.vf_key;
+        VF_PROJECT_ID = window.VOICEFLOW_SETTINGS.vf_project_id;
+        VF_VERSION_ID = window.VOICEFLOW_SETTINGS.vf_version_id;
+        
+        console.log('Voiceflow-Einstellungen erfolgreich geladen:', {
+          vf_key: VF_KEY ? "Present (masked)" : "Missing",
+          vf_project_id: VF_PROJECT_ID || "Missing",
+          vf_version_id: VF_VERSION_ID || "Missing"
+        });
+        
+        return true;
+      } else {
+        console.warn('Keine Voiceflow-Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen...');
+        
+        // Fallback zu statischen Einstellungen
+        const settings = {
+          vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
+          vf_project_id: "6703af9afcd0ea507e9c5369",
+          vf_version_id: "6703af9afcd0ea507e9c536a"
+        };
+        
+        // Einstellungen global setzen
+        VF_KEY = settings.vf_key;
+        VF_PROJECT_ID = settings.vf_project_id;
+        VF_VERSION_ID = settings.vf_version_id;
+        
+        console.log('Fallback-Voiceflow-Einstellungen geladen:', {
+          vf_key: VF_KEY ? "Present (masked)" : "Missing",
+          vf_project_id: VF_PROJECT_ID || "Missing",
+          vf_version_id: VF_VERSION_ID || "Missing"
+        });
+        
+        return true;
+      }
     } catch (error) {
       console.error('Fehler beim Laden der Voiceflow-Einstellungen:', error);
       return false;

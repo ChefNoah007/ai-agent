@@ -1,0 +1,12 @@
+{% schema %}
+{
+  "name": "Voiceflow Settings",
+  "target": "body",
+  "javascript": "voiceflow-settings.js",
+  "settings": []
+}
+{% endschema %}
+
+<script>
+  window.VOICEFLOW_SETTINGS = {{ shop.metafields.voiceflow_settings.api_credentials.value | json }};
+</script>
