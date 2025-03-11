@@ -52,65 +52,101 @@
       vfScript.type = "text/javascript";
       vfScript.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
       vfScript.onload = function() {
-        window.voiceflow.chat.load({
-          verify: { projectID: '6703af9afcd0ea507e9c5369' },  // Dein Projekt
-          url: 'https://general-runtime.voiceflow.com',
-          versionID: 'production',
-          launch: {
-            event: {
-              type: "launch",
-              payload: {
-                currentURL: window.location.href,
-                Bubble: "Ja",
-                customerLoggedIn: isLoggedIn, // true / false
-                Email: isLoggedIn ? email : ""
+        // Funktion, die die Einstellungen aus window.VOICEFLOW_SETTINGS lädt
+        const loadSettings = () => {
+          // Standard-Konfiguration
+          const config = {
+            verify: { projectID: '6703af9afcd0ea507e9c5369' },  // Fallback Projekt-ID
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            launch: {
+              event: {
+                type: "launch",
+                payload: {
+                  currentURL: window.location.href,
+                  Bubble: "Ja",
+                  customerLoggedIn: isLoggedIn, // true / false
+                  Email: isLoggedIn ? email : ""
+                }
               }
             }
+          };
+          
+          // Wenn window.VOICEFLOW_SETTINGS vorhanden ist, verwende diese Einstellungen
+          if (window.VOICEFLOW_SETTINGS) {
+            console.log('Voiceflow Bubble: Verwende Einstellungen aus dem App Block');
+            config.verify.projectID = window.VOICEFLOW_SETTINGS.vf_project_id;
+            config.versionID = window.VOICEFLOW_SETTINGS.vf_version_id || 'production';
+            // Wenn API-Key vorhanden ist, füge ihn hinzu
+            if (window.VOICEFLOW_SETTINGS.vf_key) {
+              config.authorization = window.VOICEFLOW_SETTINGS.vf_key;
+            }
+          } else {
+            console.log('Voiceflow Bubble: Keine Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen');
           }
-        }).then(() => {
-          // Falls wir auto-open sollen (Kunde eingeloggt & count=0)
-          // nutzen wir hier die bereits definierten Einstellungen aus dem Schema (z.B. auto_open_delay).
-          if (shouldAutoOpen) {
-            // Prüfen, ob Chat (wieder) automatisch geöffnet werden darf (Cooldown)
-            function canAutoOpenChat() {
-              const lastOpenTime = localStorage.getItem('chatLastOpened');
-              if (!lastOpenTime) return true;
-              const now = new Date().getTime();
-              const elapsedTime = (now - lastOpenTime) / (1000 * 60);
-              return elapsedTime >= {{ block.settings.auto_open_cooldown }};
-            }
+          
+          // Voiceflow Chat laden
+          window.voiceflow.chat.load(config)
+            .then(() => {
+              // Rest des Codes...
+              if (shouldAutoOpen) {
+                // Prüfen, ob Chat (wieder) automatisch geöffnet werden darf (Cooldown)
+                function canAutoOpenChat() {
+                  const lastOpenTime = localStorage.getItem('chatLastOpened');
+                  if (!lastOpenTime) return true;
+                  const now = new Date().getTime();
+                  const elapsedTime = (now - lastOpenTime) / (1000 * 60);
+                  return elapsedTime >= {{ block.settings.auto_open_cooldown }};
+                }
 
-            // Chat automatisch öffnen, wenn Zeit/Delay > 0 & kein Cooldown
-            if ({{ block.settings.auto_open_delay }} > 0 && canAutoOpenChat()) {
-              setTimeout(() => {
-                window.voiceflow.chat.open();
-                localStorage.setItem('chatLastOpened', new Date().getTime());
-              }, {{ block.settings.auto_open_delay }} * 1000);
-            }
+                // Chat automatisch öffnen, wenn Zeit/Delay > 0 & kein Cooldown
+                if ({{ block.settings.auto_open_delay }} > 0 && canAutoOpenChat()) {
+                  setTimeout(() => {
+                    window.voiceflow.chat.open();
+                    localStorage.setItem('chatLastOpened', new Date().getTime());
+                  }, {{ block.settings.auto_open_delay }} * 1000);
+                }
 
-            // Proaktive Nachrichten vorbereiten
-            const proactiveMessages = [];
-            {% if block.settings.proactive_message_1 != blank %}proactiveMessages.push("{{ block.settings.proactive_message_1 }}");{% endif %}
-            {% if block.settings.proactive_message_2 != blank %}proactiveMessages.push("{{ block.settings.proactive_message_2 }}");{% endif %}
-            {% if block.settings.proactive_message_3 != blank %}proactiveMessages.push("{{ block.settings.proactive_message_3 }}");{% endif %}
-            {% if block.settings.proactive_message_4 != blank and block.settings.proactive_message_4 != " " %}proactiveMessages.push("{{ block.settings.proactive_message_4 }}");{% endif %}
-            {% if block.settings.proactive_message_5 != blank and block.settings.proactive_message_5 != " " %}proactiveMessages.push("{{ block.settings.proactive_message_5 }}");{% endif %}
+                // Proaktive Nachrichten vorbereiten
+                const proactiveMessages = [];
+                {% if block.settings.proactive_message_1 != blank %}proactiveMessages.push("{{ block.settings.proactive_message_1 }}");{% endif %}
+                {% if block.settings.proactive_message_2 != blank %}proactiveMessages.push("{{ block.settings.proactive_message_2 }}");{% endif %}
+                {% if block.settings.proactive_message_3 != blank %}proactiveMessages.push("{{ block.settings.proactive_message_3 }}");{% endif %}
+                {% if block.settings.proactive_message_4 != blank and block.settings.proactive_message_4 != " " %}proactiveMessages.push("{{ block.settings.proactive_message_4 }}");{% endif %}
+                {% if block.settings.proactive_message_5 != blank and block.settings.proactive_message_5 != " " %}proactiveMessages.push("{{ block.settings.proactive_message_5 }}");{% endif %}
 
-            let messageIndex = 0;
-            function sendProactiveMessage() {
-              if (messageIndex < proactiveMessages.length) {
-                window.voiceflow.chat.proactive.push({
-                  type: 'text',
-                  payload: { message: proactiveMessages[messageIndex] }
-                });
-                messageIndex++;
-                setTimeout(sendProactiveMessage, {{ block.settings.proactive_message_interval }} * 1000);
+                let messageIndex = 0;
+                function sendProactiveMessage() {
+                  if (messageIndex < proactiveMessages.length) {
+                    window.voiceflow.chat.proactive.push({
+                      type: 'text',
+                      payload: { message: proactiveMessages[messageIndex] }
+                    });
+                    messageIndex++;
+                    setTimeout(sendProactiveMessage, {{ block.settings.proactive_message_interval }} * 1000);
+                  }
+                }
+                // Nach x Sekunden starten (Einstellung "proactive_message_start_delay")
+                setTimeout(sendProactiveMessage, {{ block.settings.proactive_message_start_delay }} * 1000);
               }
+            });
+        };
+        
+        // Prüfen, ob das Event bereits ausgelöst wurde
+        if (window.voiceflowSettingsReady) {
+          loadSettings();
+        } else {
+          // Auf das Event warten, das signalisiert, dass die Einstellungen bereit sind
+          document.addEventListener('voiceflow-settings-ready', loadSettings);
+          
+          // Timeout für den Fall, dass das Event nicht ausgelöst wird
+          setTimeout(() => {
+            if (!window.voiceflowSettingsReady) {
+              console.warn('Voiceflow Bubble: Timeout beim Warten auf voiceflow-settings-ready Event, versuche Einstellungen direkt zu laden');
+              loadSettings();
             }
-            // Nach x Sekunden starten (Einstellung "proactive_message_start_delay")
-            setTimeout(sendProactiveMessage, {{ block.settings.proactive_message_start_delay }} * 1000);
-          }
-        });
+          }, 2000);
+        }
       };
       document.head.appendChild(vfScript);
     }

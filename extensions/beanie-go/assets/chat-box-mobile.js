@@ -42,50 +42,75 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Funktion zum Laden der Voiceflow-Einstellungen
   async function loadVoiceflowSettings() {
-    try {
-      // Prüfen, ob die Einstellungen vom App Block injiziert wurden
-      if (window.VOICEFLOW_SETTINGS) {
-        console.log('Verwende Voiceflow-Einstellungen aus dem App Block...');
-        
-        // Einstellungen global setzen
-        VF_KEY = window.VOICEFLOW_SETTINGS.vf_key;
-        VF_PROJECT_ID = window.VOICEFLOW_SETTINGS.vf_project_id;
-        VF_VERSION_ID = window.VOICEFLOW_SETTINGS.vf_version_id;
-        
-        console.log('Voiceflow-Einstellungen erfolgreich geladen:', {
-          vf_key: VF_KEY ? "Present (masked)" : "Missing",
-          vf_project_id: VF_PROJECT_ID || "Missing",
-          vf_version_id: VF_VERSION_ID || "Missing"
-        });
-        
-        return true;
-      } else {
-        console.warn('Keine Voiceflow-Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen...');
-        
-        // Fallback zu statischen Einstellungen
-        const settings = {
-          vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
-          vf_project_id: "6703af9afcd0ea507e9c5369",
-          vf_version_id: "6703af9afcd0ea507e9c536a"
+    return new Promise((resolve, reject) => {
+      try {
+        // Funktion, die die Einstellungen aus window.VOICEFLOW_SETTINGS lädt
+        const loadSettings = () => {
+          try {
+            if (window.VOICEFLOW_SETTINGS) {
+              console.log('Mobile: Verwende Voiceflow-Einstellungen aus dem App Block...');
+              
+              // Einstellungen global setzen
+              VF_KEY = window.VOICEFLOW_SETTINGS.vf_key;
+              VF_PROJECT_ID = window.VOICEFLOW_SETTINGS.vf_project_id;
+              VF_VERSION_ID = window.VOICEFLOW_SETTINGS.vf_version_id;
+              
+              console.log('Mobile: Voiceflow-Einstellungen erfolgreich geladen:', {
+                vf_key: VF_KEY ? "Present (masked)" : "Missing",
+                vf_project_id: VF_PROJECT_ID || "Missing",
+                vf_version_id: VF_VERSION_ID || "Missing"
+              });
+              
+              resolve(true);
+            } else {
+              console.warn('Mobile: Keine Voiceflow-Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen...');
+              
+              // Fallback zu statischen Einstellungen
+              const settings = {
+                vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
+                vf_project_id: "6703af9afcd0ea507e9c5369",
+                vf_version_id: "6703af9afcd0ea507e9c536a"
+              };
+              
+              // Einstellungen global setzen
+              VF_KEY = settings.vf_key;
+              VF_PROJECT_ID = settings.vf_project_id;
+              VF_VERSION_ID = settings.vf_version_id;
+              
+              console.log('Mobile: Fallback-Voiceflow-Einstellungen geladen:', {
+                vf_key: VF_KEY ? "Present (masked)" : "Missing",
+                vf_project_id: VF_PROJECT_ID || "Missing",
+                vf_version_id: VF_VERSION_ID || "Missing"
+              });
+              
+              resolve(true);
+            }
+          } catch (error) {
+            console.error('Mobile: Fehler beim Laden der Voiceflow-Einstellungen:', error);
+            reject(error);
+          }
         };
         
-        // Einstellungen global setzen
-        VF_KEY = settings.vf_key;
-        VF_PROJECT_ID = settings.vf_project_id;
-        VF_VERSION_ID = settings.vf_version_id;
-        
-        console.log('Fallback-Voiceflow-Einstellungen geladen:', {
-          vf_key: VF_KEY ? "Present (masked)" : "Missing",
-          vf_project_id: VF_PROJECT_ID || "Missing",
-          vf_version_id: VF_VERSION_ID || "Missing"
-        });
-        
-        return true;
+        // Prüfen, ob das Event bereits ausgelöst wurde
+        if (window.voiceflowSettingsReady) {
+          loadSettings();
+        } else {
+          // Auf das Event warten, das signalisiert, dass die Einstellungen bereit sind
+          document.addEventListener('voiceflow-settings-ready', loadSettings);
+          
+          // Timeout für den Fall, dass das Event nicht ausgelöst wird
+          setTimeout(() => {
+            if (!window.voiceflowSettingsReady) {
+              console.warn('Mobile: Timeout beim Warten auf voiceflow-settings-ready Event, versuche Einstellungen direkt zu laden');
+              loadSettings();
+            }
+          }, 2000);
+        }
+      } catch (error) {
+        console.error('Mobile: Unerwarteter Fehler beim Laden der Voiceflow-Einstellungen:', error);
+        reject(error);
       }
-    } catch (error) {
-      console.error('Fehler beim Laden der Voiceflow-Einstellungen:', error);
-      return false;
-    }
+    });
   }
 
 
