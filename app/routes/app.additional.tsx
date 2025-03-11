@@ -31,7 +31,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-const API_URL = "https://ai-agent-iuss.onrender.com";
+// Voiceflow API URL für direkte Anfragen
+const VOICEFLOW_API_URL = "https://api.voiceflow.com/v2";
+// Fallback API URL für den Proxy-Server
+const FALLBACK_API_URL = "https://ai-agent-iuss.onrender.com";
 
 interface Transcript {
   _id: string;
@@ -83,10 +86,12 @@ export default function TranscriptViewer() {
       }
       
       try {
-        const response = await fetch("https://ai-agent-iuss.onrender.com/transcripts", {
+        // Versuche zuerst, die Transkripte direkt von der Voiceflow API zu holen
+        console.log(`Transcript viewer - Fetching from Voiceflow API: ${VOICEFLOW_API_URL}/transcripts/${PROJECT_ID}`);
+        const response = await fetch(`${VOICEFLOW_API_URL}/transcripts/${PROJECT_ID}`, {
           method: "GET",
           headers: {
-            Authorization: `${API_KEY}`,
+            Authorization: API_KEY,
             Accept: "application/json",
           },
         });
@@ -152,7 +157,9 @@ export default function TranscriptViewer() {
     setSelectedID(transcriptID);
     setDetailsLoading(true); // Ladeanzeige starten
     try {
-      const response = await fetch(`${API_URL}/transcripts/${transcriptID}`, {
+      // Versuche zuerst, die Transkript-Details direkt von der Voiceflow API zu holen
+      console.log(`Transcript viewer - Fetching details from Voiceflow API: ${VOICEFLOW_API_URL}/transcripts/${PROJECT_ID}/${transcriptID}`);
+      const response = await fetch(`${VOICEFLOW_API_URL}/transcripts/${PROJECT_ID}/${transcriptID}`, {
         method: "GET",
         headers: {
           Authorization: API_KEY,
