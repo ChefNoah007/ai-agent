@@ -101,97 +101,66 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Funktion zum Laden der Voiceflow-Einstellungen
   async function loadVoiceflowSettings() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       try {
-        console.log('chat-box.js: loadVoiceflowSettings gestartet');
-        console.log('chat-box.js: window.VOICEFLOW_SETTINGS existiert?', window.VOICEFLOW_SETTINGS ? true : false);
-        console.log('chat-box.js: window.voiceflowSettingsReady existiert?', window.voiceflowSettingsReady ? true : false);
+        console.log('Prüfe Voiceflow-Einstellungen...');
         
+        // Prüfen, ob die Einstellungen vom Snippet gesetzt wurden
         if (window.VOICEFLOW_SETTINGS) {
-          console.log('chat-box.js: Initiale VOICEFLOW_SETTINGS:', {
-            vf_key: window.VOICEFLOW_SETTINGS.vf_key ? "Present (masked)" : "Missing",
-            vf_project_id: window.VOICEFLOW_SETTINGS.vf_project_id || "Missing",
-            vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id || "Missing",
-            type: typeof window.VOICEFLOW_SETTINGS,
-            keys: Object.keys(window.VOICEFLOW_SETTINGS),
-            raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
-          });
-        }
-        
-        // Funktion, die die Einstellungen aus window.VOICEFLOW_SETTINGS lädt
-        const loadSettings = () => {
-          try {
-            console.log('chat-box.js: loadSettings aufgerufen');
-            console.log('chat-box.js: window.VOICEFLOW_SETTINGS existiert jetzt?', window.VOICEFLOW_SETTINGS ? true : false);
-            
-            if (window.VOICEFLOW_SETTINGS) {
-              console.log('chat-box.js: Verwende Voiceflow-Einstellungen aus dem App Block...');
-              
-              // Einstellungen global setzen
-              VF_KEY = window.VOICEFLOW_SETTINGS.vf_key;
-              VF_PROJECT_ID = window.VOICEFLOW_SETTINGS.vf_project_id;
-              VF_VERSION_ID = window.VOICEFLOW_SETTINGS.vf_version_id;
-              
-              console.log('chat-box.js: Voiceflow-Einstellungen erfolgreich geladen:', {
-                vf_key: VF_KEY ? "Present (masked)" : "Missing",
-                vf_project_id: VF_PROJECT_ID || "Missing",
-                vf_version_id: VF_VERSION_ID || "Missing",
-                raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
-              });
-              
-              resolve(true);
-            } else {
-              console.warn('chat-box.js: Keine Voiceflow-Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen...');
-              
-              // Fallback zu statischen Einstellungen
-              const settings = {
-                vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
-                vf_project_id: "6703af9afcd0ea507e9c5369",
-                vf_version_id: "6703af9afcd0ea507e9c536a"
-              };
-              
-              // Einstellungen global setzen
-              VF_KEY = settings.vf_key;
-              VF_PROJECT_ID = settings.vf_project_id;
-              VF_VERSION_ID = settings.vf_version_id;
-              
-              console.log('chat-box.js: Fallback-Voiceflow-Einstellungen geladen:', {
-                vf_key: VF_KEY ? "Present (masked)" : "Missing",
-                vf_project_id: VF_PROJECT_ID || "Missing",
-                vf_version_id: VF_VERSION_ID || "Missing"
-              });
-              
-              resolve(true);
-            }
-          } catch (error) {
-            console.error('chat-box.js: Fehler beim Laden der Voiceflow-Einstellungen:', error);
-            reject(error);
-          }
-        };
-        
-        // Prüfen, ob das Event bereits ausgelöst wurde
-        if (window.voiceflowSettingsReady) {
-          console.log('chat-box.js: window.voiceflowSettingsReady ist bereits true, lade Einstellungen direkt');
-          loadSettings();
-        } else {
-          console.log('chat-box.js: Warte auf voiceflow-settings-ready Event...');
-          // Auf das Event warten, das signalisiert, dass die Einstellungen bereit sind
-          document.addEventListener('voiceflow-settings-ready', () => {
-            console.log('chat-box.js: voiceflow-settings-ready Event empfangen');
-            loadSettings();
+          console.log('Verwende Voiceflow-Einstellungen aus dem Snippet...');
+          
+          // Einstellungen global setzen
+          VF_KEY = window.VOICEFLOW_SETTINGS.vf_key;
+          VF_PROJECT_ID = window.VOICEFLOW_SETTINGS.vf_project_id;
+          VF_VERSION_ID = window.VOICEFLOW_SETTINGS.vf_version_id;
+          
+          console.log('Voiceflow-Einstellungen erfolgreich geladen:', {
+            vf_key: VF_KEY ? "Present (masked)" : "Missing",
+            vf_project_id: VF_PROJECT_ID || "Missing",
+            vf_version_id: VF_VERSION_ID || "Missing"
           });
           
-          // Timeout für den Fall, dass das Event nicht ausgelöst wird
-          setTimeout(() => {
-            if (!window.voiceflowSettingsReady) {
-              console.warn('chat-box.js: Timeout beim Warten auf voiceflow-settings-ready Event, versuche Einstellungen direkt zu laden');
-              loadSettings();
-            }
-          }, 2000);
+          resolve(true);
+        } else {
+          console.warn('Keine Voiceflow-Einstellungen gefunden, verwende Fallback-Einstellungen...');
+          
+          // Fallback zu statischen Einstellungen
+          const settings = {
+            vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
+            vf_project_id: "6703af9afcd0ea507e9c5369",
+            vf_version_id: "6703af9afcd0ea507e9c536a"
+          };
+          
+          // Einstellungen global setzen
+          VF_KEY = settings.vf_key;
+          VF_PROJECT_ID = settings.vf_project_id;
+          VF_VERSION_ID = settings.vf_version_id;
+          
+          console.log('Fallback-Voiceflow-Einstellungen geladen:', {
+            vf_key: VF_KEY ? "Present (masked)" : "Missing",
+            vf_project_id: VF_PROJECT_ID || "Missing",
+            vf_version_id: VF_VERSION_ID || "Missing"
+          });
+          
+          resolve(true);
         }
       } catch (error) {
-        console.error('chat-box.js: Unerwarteter Fehler beim Laden der Voiceflow-Einstellungen:', error);
-        reject(error);
+        console.error('Fehler beim Laden der Voiceflow-Einstellungen:', error);
+        
+        // Fallback zu statischen Einstellungen im Fehlerfall
+        const settings = {
+          vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
+          vf_project_id: "6703af9afcd0ea507e9c5369",
+          vf_version_id: "6703af9afcd0ea507e9c536a"
+        };
+        
+        // Einstellungen global setzen
+        VF_KEY = settings.vf_key;
+        VF_PROJECT_ID = settings.vf_project_id;
+        VF_VERSION_ID = settings.vf_version_id;
+        
+        console.log('Fehlerfall: Fallback-Voiceflow-Einstellungen geladen');
+        resolve(true);
       }
     });
   }
