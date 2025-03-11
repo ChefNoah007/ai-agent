@@ -44,7 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
   async function loadVoiceflowSettings() {
     try {
       console.log('Lade Voiceflow-Einstellungen vom Server...');
-      const response = await fetch('/api/voiceflow-settings');
+      // Verwende die korrekte URL für die API
+      // Wenn wir im Shop-Frontend sind, verwenden wir die vollständige App-URL
+      const appUrl = window.location.hostname.includes('myshopify.com') 
+        ? 'https://ai-agent-iuss.onrender.com' 
+        : '';
+      const response = await fetch(`${appUrl}/api/voiceflow-settings`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
