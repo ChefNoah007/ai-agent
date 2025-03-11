@@ -1,20 +1,9 @@
-// This file is loaded by the voiceflow_settings.liquid app block
+// This file is loaded by the voiceflow_settings.liquid block
 // It makes the Voiceflow settings available to the chat components
 
 (function() {
   console.log('voiceflow-settings.js: Script started');
-  console.log('voiceflow-settings.js: window.VOICEFLOW_SETTINGS exists?', window.VOICEFLOW_SETTINGS ? true : false);
-  if (window.VOICEFLOW_SETTINGS) {
-    console.log('voiceflow-settings.js: Initial VOICEFLOW_SETTINGS:', {
-      vf_key: window.VOICEFLOW_SETTINGS.vf_key ? "Present (masked)" : "Missing",
-      vf_project_id: window.VOICEFLOW_SETTINGS.vf_project_id || "Missing",
-      vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id || "Missing",
-      type: typeof window.VOICEFLOW_SETTINGS,
-      keys: Object.keys(window.VOICEFLOW_SETTINGS),
-      raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
-    });
-  }
-
+  
   // Default settings to use if any values are missing
   const DEFAULT_SETTINGS = {
     vf_key: "VF.DM.670508f0cd8f2c59f1b534d4.t6mfdXeIfuUSTqUi",
@@ -22,7 +11,7 @@
     vf_version_id: "6703af9afcd0ea507e9c536a"
   };
 
-  // Check if the settings were injected by the app block
+  // Check if the settings were injected by the block
   if (window.VOICEFLOW_SETTINGS) {
     console.log('voiceflow-settings.js: Voiceflow settings found in window.VOICEFLOW_SETTINGS');
     
@@ -45,8 +34,7 @@
     console.log('voiceflow-settings.js: Final Voiceflow settings:', {
       vf_key: window.VOICEFLOW_SETTINGS.vf_key ? "Present (masked)" : "Missing",
       vf_project_id: window.VOICEFLOW_SETTINGS.vf_project_id,
-      vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id,
-      raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
+      vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id
     });
   } else {
     console.warn('voiceflow-settings.js: Voiceflow settings not found in window.VOICEFLOW_SETTINGS, creating with defaults');
@@ -59,9 +47,7 @@
   
   // Set a flag to indicate that the settings are ready
   window.voiceflowSettingsReady = true;
-  console.log('voiceflow-settings.js: Set window.voiceflowSettingsReady =', window.voiceflowSettingsReady);
   
   // Dispatch an event to notify other scripts that Voiceflow settings are ready
   document.dispatchEvent(new CustomEvent('voiceflow-settings-ready'));
-  console.log('voiceflow-settings.js: Dispatched voiceflow-settings-ready event');
 })();
