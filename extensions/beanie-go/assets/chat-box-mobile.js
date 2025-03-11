@@ -44,26 +44,45 @@ document.addEventListener('DOMContentLoaded', function () {
   async function loadVoiceflowSettings() {
     return new Promise((resolve, reject) => {
       try {
+        console.log('chat-box-mobile.js: loadVoiceflowSettings gestartet');
+        console.log('chat-box-mobile.js: window.VOICEFLOW_SETTINGS existiert?', window.VOICEFLOW_SETTINGS ? true : false);
+        console.log('chat-box-mobile.js: window.voiceflowSettingsReady existiert?', window.voiceflowSettingsReady ? true : false);
+        
+        if (window.VOICEFLOW_SETTINGS) {
+          console.log('chat-box-mobile.js: Initiale VOICEFLOW_SETTINGS:', {
+            vf_key: window.VOICEFLOW_SETTINGS.vf_key ? "Present (masked)" : "Missing",
+            vf_project_id: window.VOICEFLOW_SETTINGS.vf_project_id || "Missing",
+            vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id || "Missing",
+            type: typeof window.VOICEFLOW_SETTINGS,
+            keys: Object.keys(window.VOICEFLOW_SETTINGS),
+            raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
+          });
+        }
+        
         // Funktion, die die Einstellungen aus window.VOICEFLOW_SETTINGS lädt
         const loadSettings = () => {
           try {
+            console.log('chat-box-mobile.js: loadSettings aufgerufen');
+            console.log('chat-box-mobile.js: window.VOICEFLOW_SETTINGS existiert jetzt?', window.VOICEFLOW_SETTINGS ? true : false);
+            
             if (window.VOICEFLOW_SETTINGS) {
-              console.log('Mobile: Verwende Voiceflow-Einstellungen aus dem App Block...');
+              console.log('chat-box-mobile.js: Verwende Voiceflow-Einstellungen aus dem App Block...');
               
               // Einstellungen global setzen
               VF_KEY = window.VOICEFLOW_SETTINGS.vf_key;
               VF_PROJECT_ID = window.VOICEFLOW_SETTINGS.vf_project_id;
               VF_VERSION_ID = window.VOICEFLOW_SETTINGS.vf_version_id;
               
-              console.log('Mobile: Voiceflow-Einstellungen erfolgreich geladen:', {
+              console.log('chat-box-mobile.js: Voiceflow-Einstellungen erfolgreich geladen:', {
                 vf_key: VF_KEY ? "Present (masked)" : "Missing",
                 vf_project_id: VF_PROJECT_ID || "Missing",
-                vf_version_id: VF_VERSION_ID || "Missing"
+                vf_version_id: VF_VERSION_ID || "Missing",
+                raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
               });
               
               resolve(true);
             } else {
-              console.warn('Mobile: Keine Voiceflow-Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen...');
+              console.warn('chat-box-mobile.js: Keine Voiceflow-Einstellungen im window.VOICEFLOW_SETTINGS gefunden, verwende Fallback-Einstellungen...');
               
               // Fallback zu statischen Einstellungen
               const settings = {
@@ -77,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
               VF_PROJECT_ID = settings.vf_project_id;
               VF_VERSION_ID = settings.vf_version_id;
               
-              console.log('Mobile: Fallback-Voiceflow-Einstellungen geladen:', {
+              console.log('chat-box-mobile.js: Fallback-Voiceflow-Einstellungen geladen:', {
                 vf_key: VF_KEY ? "Present (masked)" : "Missing",
                 vf_project_id: VF_PROJECT_ID || "Missing",
                 vf_version_id: VF_VERSION_ID || "Missing"
@@ -86,28 +105,33 @@ document.addEventListener('DOMContentLoaded', function () {
               resolve(true);
             }
           } catch (error) {
-            console.error('Mobile: Fehler beim Laden der Voiceflow-Einstellungen:', error);
+            console.error('chat-box-mobile.js: Fehler beim Laden der Voiceflow-Einstellungen:', error);
             reject(error);
           }
         };
         
         // Prüfen, ob das Event bereits ausgelöst wurde
         if (window.voiceflowSettingsReady) {
+          console.log('chat-box-mobile.js: window.voiceflowSettingsReady ist bereits true, lade Einstellungen direkt');
           loadSettings();
         } else {
+          console.log('chat-box-mobile.js: Warte auf voiceflow-settings-ready Event...');
           // Auf das Event warten, das signalisiert, dass die Einstellungen bereit sind
-          document.addEventListener('voiceflow-settings-ready', loadSettings);
+          document.addEventListener('voiceflow-settings-ready', () => {
+            console.log('chat-box-mobile.js: voiceflow-settings-ready Event empfangen');
+            loadSettings();
+          });
           
           // Timeout für den Fall, dass das Event nicht ausgelöst wird
           setTimeout(() => {
             if (!window.voiceflowSettingsReady) {
-              console.warn('Mobile: Timeout beim Warten auf voiceflow-settings-ready Event, versuche Einstellungen direkt zu laden');
+              console.warn('chat-box-mobile.js: Timeout beim Warten auf voiceflow-settings-ready Event, versuche Einstellungen direkt zu laden');
               loadSettings();
             }
           }, 2000);
         }
       } catch (error) {
-        console.error('Mobile: Unerwarteter Fehler beim Laden der Voiceflow-Einstellungen:', error);
+        console.error('chat-box-mobile.js: Unerwarteter Fehler beim Laden der Voiceflow-Einstellungen:', error);
         reject(error);
       }
     });

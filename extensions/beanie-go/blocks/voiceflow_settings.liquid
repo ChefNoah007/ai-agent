@@ -8,6 +8,10 @@
 {% endschema %}
 
 <script>
+  console.log('voiceflow_settings.liquid: Checking for metafields...');
+  console.log('voiceflow_settings.liquid: shop.metafields.voiceflow_settings exists?', {% if shop.metafields.voiceflow_settings %}true{% else %}false{% endif %});
+  console.log('voiceflow_settings.liquid: shop.metafields.voiceflow_settings.api_credentials exists?', {% if shop.metafields.voiceflow_settings.api_credentials %}true{% else %}false{% endif %});
+  
   window.VOICEFLOW_SETTINGS = {% if shop.metafields.voiceflow_settings.api_credentials %}
     {{ shop.metafields.voiceflow_settings.api_credentials.value | json }}
   {% else %}
@@ -18,9 +22,10 @@
     }
   {% endif %};
   
-  console.log('Voiceflow settings initialized in voiceflow_settings.liquid:', {
+  console.log('voiceflow_settings.liquid: VOICEFLOW_SETTINGS initialized:', {
     vf_key: window.VOICEFLOW_SETTINGS.vf_key ? "Present (masked)" : "Missing",
     vf_project_id: window.VOICEFLOW_SETTINGS.vf_project_id || "Missing",
-    vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id || "Missing"
+    vf_version_id: window.VOICEFLOW_SETTINGS.vf_version_id || "Missing",
+    raw: JSON.stringify(window.VOICEFLOW_SETTINGS)
   });
 </script>
