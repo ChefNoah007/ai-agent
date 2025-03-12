@@ -2,6 +2,7 @@ import { json } from "@remix-run/node";
 import { shopifyApi, LATEST_API_VERSION } from "@shopify/shopify-api";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "../db.server.cjs";
+import { getShopDomain } from "../utils/env-config.server";
 
 const shopify = shopifyApi({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -14,7 +15,7 @@ const shopify = shopifyApi({
 });
 
 export async function loader({ request }) {
-  const shopDomain = "rjgau1-dg.myshopify.com";
+  const shopDomain = getShopDomain();
   const offlineSessionId = shopify.session.getOfflineId(shopDomain);
   const session = await shopify.config.sessionStorage.loadSession(offlineSessionId);
   if (!session) {

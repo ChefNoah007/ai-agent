@@ -10,6 +10,7 @@ import {
   Checkbox, // <-- wir importieren Checkbox
 } from '@shopify/polaris';
 import { useState } from 'react';
+import { API_SYNCHRONIZE_ENDPOINT } from '../utils/env-config.server';
 
 export default function SyncPage() {
   const [isSynchronizing, setIsSynchronizing] = useState(false);
@@ -22,7 +23,7 @@ export default function SyncPage() {
     setIsSynchronizing(true);
     try {
       // ⬇️ Body enthält jetzt { overwrite }
-      const response = await fetch('https://ai-agent-iuss.onrender.com/api/synchronize', {
+      const response = await fetch(API_SYNCHRONIZE_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

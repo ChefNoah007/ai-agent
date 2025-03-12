@@ -13,6 +13,7 @@ import {
   Text,
 } from '@shopify/polaris';
 import { useState } from 'react';
+import { API_SYNCHRONIZE_ENDPOINT, API_SYNCHRONIZE_URLS_ENDPOINT } from '../utils/env-config.server';
 
 export default function SyncPage() {
   const [isSynchronizing, setIsSynchronizing] = useState(false);
@@ -35,8 +36,8 @@ export default function SyncPage() {
     try {
       // Determine which endpoint to call based on the selected sync type
       const endpoint = syncType === 'products' 
-        ? 'https://ai-agent-iuss.onrender.com/api/synchronize'
-        : 'https://ai-agent-iuss.onrender.com/api/synchronize-urls';
+        ? API_SYNCHRONIZE_ENDPOINT
+        : API_SYNCHRONIZE_URLS_ENDPOINT;
       
       const response = await fetch(endpoint, {
         method: 'POST',

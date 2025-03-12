@@ -15,6 +15,7 @@ import {
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { getVoiceflowSettings } from "../utils/voiceflow-settings.server";
+import { VOICEFLOW_API_URL, APP_URL } from "../utils/env-config.server";
 import ReactMarkdown from 'react-markdown';
 
 // Define the type for our loader data
@@ -32,10 +33,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-// Voiceflow API URL für direkte Anfragen
-const VOICEFLOW_API_URL = "https://api.voiceflow.com/v2";
 // Fallback API URL für den Proxy-Server
-const FALLBACK_API_URL = "https://ai-agent-iuss.onrender.com";
+const FALLBACK_API_URL = APP_URL;
 
 interface Transcript {
   _id: string;
