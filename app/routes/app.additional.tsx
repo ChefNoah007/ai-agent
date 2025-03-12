@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CSSProperties } from 'react';
 import {
   Page,
@@ -8,6 +8,7 @@ import {
   List,
   Select,
   Button,
+  ButtonGroup,
   Card,
   Box,
 } from "@shopify/polaris";
@@ -71,6 +72,8 @@ export default function TranscriptViewer() {
   const [selectedID, setSelectedID] = useState<string | null>(null);
   const [showDebug, setShowDebug] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [activeView, setActiveView] = useState<'list' | 'details'>('list');
 
   // API-Call 1: Transkriptübersicht
   const fetchTranscripts = async () => {
@@ -231,6 +234,29 @@ export default function TranscriptViewer() {
   };
   
 
+  // Media query for responsive design
+  const checkIsMobile = useCallback(() => {
+    setIsMobileView(window.innerWidth < 768);
+  }, []);
+
+  useEffect(() => {
+    // Initial check
+    checkIsMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkIsMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, [checkIsMobile]);
+
+  // Switch to details view when a transcript is selected on mobile
+  useEffect(() => {
+    if (isMobileView && selectedID) {
+      setActiveView('details');
+    }
+  }, [selectedID, isMobileView]);
+
   // Get userID from URL parameters
   const [searchParams] = useSearchParams();
   const userIDParam = searchParams.get('userID');
@@ -324,10 +350,37 @@ export default function TranscriptViewer() {
   };
 
   return (
-    <Page title="Transcripts">
+    <Page 
+      title="Transcripts"
+      backAction={isMobileView && activeView === 'details' ? {
+        onAction: () => setActiveView('list'),
+        content: 'Back to List'
+      } : undefined}
+    >
+      {isMobileView && (
+        <div style={{ marginBottom: '16px' }}>
+          <ButtonGroup>
+            <Button 
+              pressed={activeView === 'list'} 
+              onClick={() => setActiveView('list')}
+            >
+              Transcript List
+            </Button>
+            <Button 
+              pressed={activeView === 'details'} 
+              onClick={() => setActiveView('details')}
+              disabled={!selectedID}
+            >
+              Transcript Details
+            </Button>
+          </ButtonGroup>
+        </div>
+      )}
+      
       <Layout>
         {/* Linke Seite: Liste der Transkripte */}
-        <Layout.Section variant = "oneThird">
+        {(!isMobileView || (isMobileView && activeView === 'list')) && (
+          <Layout.Section variant = "oneThird">
           <Card>
           <Text as="h2" variant="headingMd">
             Transcripts ({transcripts.length})
@@ -380,10 +433,12 @@ export default function TranscriptViewer() {
               ))}
             </List>
           </Card>
-        </Layout.Section>
+          </Layout.Section>
+        )}
 
         {/* Rechte Seite: Details eines Transkripts */}
-        <Layout.Section>
+        {(!isMobileView || (isMobileView && activeView === 'details')) && (
+          <Layout.Section>
           <Card>
             <Text as="h2" variant="headingMd">
               Transcript Details
@@ -449,7 +504,8 @@ export default function TranscriptViewer() {
               <Text as="p">Select a transcript to view details</Text>
             )}
           </Card>
-        </Layout.Section>
+          </Layout.Section>
+        )}
       </Layout>
     </Page>
   );

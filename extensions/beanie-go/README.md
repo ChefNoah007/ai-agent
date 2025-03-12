@@ -36,3 +36,11 @@ Wenn die Chat-Komponenten die Voiceflow-Einstellungen nicht korrekt laden:
 - `chat-box-mobile.js`: Mobile-Chat-Komponente
 - `voiceflow_Bubble.liquid`: Voiceflow Bubble-Komponente
 - `voiceflow_chat.liquid`: Desktop Voiceflow Chat-Komponente
+
+## Github Push
+1. git remote rm origin
+git remote add origin https://github.com/ChefNoah007/ai-agent.git
+
+2.  git add .         
+git commit -m "<Kommentar>"
+git push origin main
