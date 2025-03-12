@@ -15,7 +15,7 @@ import {
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { getVoiceflowSettings } from "../utils/voiceflow-settings.server";
-import { VOICEFLOW_API_URL, APP_URL } from "../utils/env-config.server";
+import { VOICEFLOW_API_URL, APP_URL } from "../utils/env-config";
 import ReactMarkdown from 'react-markdown';
 
 // Define the type for our loader data

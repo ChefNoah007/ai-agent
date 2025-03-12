@@ -10,7 +10,7 @@ import {
   Checkbox, // <-- wir importieren Checkbox
 } from '@shopify/polaris';
 import { useState } from 'react';
-import { API_SYNCHRONIZE_ENDPOINT } from '../utils/env-config.server';
+import { API_SYNCHRONIZE_ENDPOINT } from '../utils/env-config';
 
 export default function SyncPage() {
   const [isSynchronizing, setIsSynchronizing] = useState(false);
