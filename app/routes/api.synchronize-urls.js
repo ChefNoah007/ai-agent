@@ -2,7 +2,7 @@ import { json } from "@remix-run/node";
 import axios from "axios";
 import { parseStringPromise } from "xml2js";
 import { getVoiceflowSettings } from "../utils/voiceflow-settings.server";
-import { getShopDomain } from "../utils/env-config.server";
+import { authenticate } from "../shopify.server";
 
 export const action = async ({ request }) => {
   // Get Voiceflow settings from metafields
@@ -12,8 +12,26 @@ export const action = async ({ request }) => {
     const body = await request.json();
     const overwrite = body.overwrite === true;
 
-    // Get shop domain from environment variables
-    const shopDomain = getShopDomain();
+    // Authenticate with Shopify and get the admin API client
+    const authResult = await authenticate.admin(request);
+    if (!authResult) {
+      throw new Error("Authentication failed");
+    }
+
+    // Log the structure of the authResult to understand what's available
+    console.log("Auth result structure in URL sync:", Object.keys(authResult));
+    
+    // Get the session from the auth result
+    const { session } = authResult;
+    if (!session) {
+      throw new Error("No session found in auth result");
+    }
+
+    // Get the shop domain from the session
+    const shopDomain = session.shop;
+    if (!shopDomain) {
+      throw new Error("No shop found in session");
+    }
     
     // Fetch the sitemap
     const sitemapUrl = `https://${shopDomain}/sitemap.xml`;
